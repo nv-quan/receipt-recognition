@@ -6,7 +6,7 @@ inp = sys.argv[1]
 img = cv.imread(inp)
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 blur = cv.GaussianBlur(gray, (5,5), 0)
-edges = cv.Canny(blur, 100, 200)
+edges = cv.Canny(blur, 50, 200)
 cv.imwrite('./output/canny.png', edges)
 cv.imwrite('./output/original.png', img)
 im2 , contours, hierarchy  = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
