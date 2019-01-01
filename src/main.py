@@ -8,7 +8,7 @@ gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 edges = cv.Canny(gray, 100, 200)
 cv.imwrite('./output/canny.png', edges)
 cv.imwrite('./output/original.png', img)
-im2 , contours, hierarchy  = cv.findContours(edges, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
+im2 , contours, hierarchy  = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 res = list()
 error = 0.1
 # minarea = img.shape[0] * img.shape[1] / 2
