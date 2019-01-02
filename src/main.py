@@ -1,6 +1,29 @@
 import cv2 as cv
 import numpy as np
 import sys
+def getDistance(a,b):
+    return np.linalg.norm(a - b)
+    
+def getOrderPoints(points):
+    #divide points into 2 part: left and right
+    #sort the points based on x-coordinates
+    print(points)
+    sortArgX = np.argsort(points[:,0]) 
+    print('sa: ' + str(sortArgX))
+    left = np.array([points[x] for x in sortArgX[0:2]])
+    right = np.array([points[x] for x in sortArgX[2:4]])
+    #point with bigger y is topLeft and vice versa
+    topLeft = left[np.argmax(left[:,1])]
+    bottomLeft = left[np.argmin(left[:,1])]
+    #point that is farther from the topLeft is bottomRight
+    if getDistance(topLeft, right[0]) > getDistance(topLeft, right[1]):
+        bottomRight = right[0]
+        topRight = right[1]
+    else:
+        bottomRight = right[1]
+        topRight = right[0]
+    return (topLeft, topRight, bottomRight, bottomLeft)
+
 #resize the image for faster processing
 inp = sys.argv[1]
 img = cv.imread(inp)
@@ -20,26 +43,14 @@ for contour in contours:
     if len(approx) == 4:
         res.append(approx)
 if len(res) > 0:
-    res = max(res, key = cv.contourArea)
-    cv.drawContours(img, np.array([res]), -1, (0,255,0), 3) 
+    result = max(res, key = cv.contourArea)
+    cv.drawContours(img, [result], -1, (0,255,0), 3) 
 else:
     print("Contours not found")
 cv.imwrite('./output/contours.png', img)
-def getDistance(a,b):
-    
-def getOrderPoints(points):
-    #divide points into 2 part: left and right
-    #sort the points based on x-coordinates
-    sortArgX = np.argsort(points[:,0]) 
-    left = np.array([points[x] for x in sortArgX[0:2]])
-    right = np.array([points[x] for x in sortArgX[2:4]])
-    #point with bigger y is topLeft and vice versa
-    topLeft = left[np.argmax(left[:,1])]
-    bottomLeft = left[np.argmin(left[:,1])]
-    #point that is farther from the topLeft is bottomRight
-    if getDistance(topLeft, right[0]) > getDistance(topLeft, right[1]):
-        bottomRight = right[0]
-        topRight = right[1]
-    else:
-        bottomRight = right[1]
-        topRight = right[0]
+tl, tr, br, bl = getOrderPoints(result)
+print(result)
+print('tl: ' + str(tl))
+print('tr: ' + str(tr))
+print('br: ' + str(br))
+print('bl: ' + str(bl))
