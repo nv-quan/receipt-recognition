@@ -12,9 +12,9 @@ def getOrderPoints(points):
     print('sa: ' + str(sortArgX))
     left = np.array([points[x] for x in sortArgX[0:2]])
     right = np.array([points[x] for x in sortArgX[2:4]])
-    #point with bigger y is topLeft and vice versa
-    topLeft = left[np.argmax(left[:,1])]
-    bottomLeft = left[np.argmin(left[:,1])]
+    #point with bigger y is bottomLeft and vice versa
+    bottomLeft = left[np.argmax(left[:,1])]
+    topLeft = left[np.argmin(left[:,1])]
     #point that is farther from the topLeft is bottomRight
     if getDistance(topLeft, right[0]) > getDistance(topLeft, right[1]):
         bottomRight = right[0]
@@ -47,10 +47,13 @@ if len(res) > 0:
     cv.drawContours(img, [result], -1, (0,255,0), 3) 
 else:
     print("Contours not found")
-cv.imwrite('./output/contours.png', img)
-tl, tr, br, bl = getOrderPoints(result)
-print(result)
-print('tl: ' + str(tl))
+tl, tr, br, bl = getOrderPoints(np.array([x[0] for x in result]))
+print('tl: ' + str(type(tl)))
 print('tr: ' + str(tr))
 print('br: ' + str(br))
 print('bl: ' + str(bl))
+cv.putText(img, "A", tuple(tl), cv.FONT_HERSHEY_PLAIN, 2.0, (0,0,255))
+cv.putText(img, "B", tuple(tr), cv.FONT_HERSHEY_PLAIN, 2.0, (0,0,255))
+cv.putText(img, "C", tuple(br), cv.FONT_HERSHEY_PLAIN, 2.0, (0,0,255))
+cv.putText(img, "D", tuple(bl), cv.FONT_HERSHEY_PLAIN, 2.0, (0,0,255))
+cv.imwrite('./output/contours.png', img)
