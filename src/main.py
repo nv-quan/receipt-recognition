@@ -31,12 +31,10 @@ gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 blur = cv.GaussianBlur(gray, (5,5), 0)
 edges = cv.Canny(blur, 50, 200)
 #need to improve by automatically decide Canny parameters
-cv.imwrite('./output/canny.png', edges)
 cv.imwrite('./output/original.png', img)
 im2 , contours, hierarchy  = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 res = list()
 error = 0.02
-# minarea = img.shape[0] * img.shape[1] / 2
 for contour in contours:
     epsilon = error * cv.arcLength(contour, True)
     approx = cv.approxPolyDP(contour, epsilon, True)
@@ -65,4 +63,3 @@ transMat = cv.getPerspectiveTransform(oldCorners, newCorners)
 #Transform
 resultImage = cv.warpPerspective(img, transMat, (newWidth, newHeight))
 cv.imwrite('./output/output.png', resultImage)
->>>>>>> edit
