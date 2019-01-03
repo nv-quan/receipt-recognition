@@ -8,6 +8,9 @@ Working on preprocessing images.
 * cv2 (OpenCV 3.4.4)
 * numpy
 ## Usage
+```sh
+$ git clone https://github.com/nv-quan/receipt-recognition.git
+$ cd receipt-recognition
+$ python3 ./src/main.py [input picture]
 ```
-python3 ./src/main.py [input picture]
-```
+Press anykey after the window is shown
