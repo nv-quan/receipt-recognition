@@ -1,13 +1,13 @@
 # Receipt recognition project
-## Goal
+### Goal
 To build an application that automatically extracts information from pictures of receipts.
-## Current progress
+### Current progress
 Working on preprocessing images.
-## Dependencies
+### Dependencies
 * python3
 * cv2 (OpenCV 3.4.4)
 * numpy
-## Usage
+### Usage
 ```sh
 $ git clone https://github.com/nv-quan/receipt-recognition.git
 $ cd receipt-recognition
