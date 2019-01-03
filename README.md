@@ -13,4 +13,4 @@ $ git clone https://github.com/nv-quan/receipt-recognition.git
 $ cd receipt-recognition
 $ python3 ./src/main.py [input picture]
 ```
-Press anykey after the window is shown
+Press any key after the window is shown
