@@ -1,8 +1,13 @@
 # Receipt recognition project
 ## Goal
-To build an end-to-end application that automatically extracts information from pictures of receipts.
+To build an application that automatically extracts information from pictures of receipts.
 ## Current progress
 Working on preprocessing images.
-## How to use
+## Dependencies
+* python3
+* cv2 (OpenCV 3.4.4)
+* numpy
+## Usage
 ```
-python3 main.py [input picture]
+python3 ./src/main.py [input picture]
+```
