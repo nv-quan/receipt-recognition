@@ -43,23 +43,23 @@ for contour in contours:
 if len(res) > 0:
     result = max(res, key = cv.contourArea)
     cv.drawContours(contourImg, [result], -1, (0,255,0), 3) 
+    contourPoints = np.array([x[0] for x in result], dtype = "float32");
+    topLeft, topRight, bottomRight, bottomLeft = getOrderPoints(contourPoints)
+    oldCorners = np.array([topLeft, topRight, bottomRight, bottomLeft], dtype = "float32")
+    cv.imwrite('./output/contours.png', contourImg)
+    #Compute new width and height
+    newWidth = max(getDistance(topLeft, topRight), getDistance(bottomLeft, bottomRight))
+    newHeight = max(getDistance(topLeft, bottomLeft), getDistance(topRight, bottomRight))
+    #Compute 4 new corners
+    newCorners = np.array([
+        [0, 0],
+        [newWidth - 1, 0],
+        [newWidth - 1, newHeight -1],
+        [0, newHeight -1]], dtype = "float32")
+    #Compute transformation matrix
+    transMat = cv.getPerspectiveTransform(oldCorners, newCorners)
+    #Transform
+    resultImage = cv.warpPerspective(img, transMat, (newWidth, newHeight))
+    cv.imwrite('./output/output.png', resultImage)
 else:
     print("Contours not found")
-contourPoints = np.array([x[0] for x in result], dtype = "float32");
-topLeft, topRight, bottomRight, bottomLeft = getOrderPoints(contourPoints)
-oldCorners = np.array([topLeft, topRight, bottomRight, bottomLeft], dtype = "float32")
-cv.imwrite('./output/contours.png', contourImg)
-#Compute new width and height
-newWidth = max(getDistance(topLeft, topRight), getDistance(bottomLeft, bottomRight))
-newHeight = max(getDistance(topLeft, bottomLeft), getDistance(topRight, bottomRight))
-#Compute 4 new corners
-newCorners = np.array([
-    [0, 0],
-    [newWidth - 1, 0],
-    [newWidth - 1, newHeight -1],
-    [0, newHeight -1]], dtype = "float32")
-#Compute transformation matrix
-transMat = cv.getPerspectiveTransform(oldCorners, newCorners)
-#Transform
-resultImage = cv.warpPerspective(img, transMat, (newWidth, newHeight))
-cv.imwrite('./output/output.png', resultImage)
