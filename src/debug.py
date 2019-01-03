@@ -6,7 +6,7 @@ import preprocess as pre
 inp = sys.argv[1]
 img = cv.imread(inp)
 debug = list()
-processed = pre.changeView(img, 0.01, debug)
+processed = pre.changeView(img, 0.02, debug)
 cv.imshow('Preprocessed', processed)
 cv.waitKey(0)
 cv.destroyAllWindows()
