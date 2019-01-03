@@ -5,9 +5,10 @@ def getDistance(a,b):
 def getArea(contour):
     return abs(cv.contourArea(contour))
 def getOrderPoints(points):
-    #divide points into 2 part: left and right
-    #sort the points based on x-coordinates
-    print(points)
+    '''
+    Divide points into 2 part: left and right
+    sort the points based on x-coordinates
+    '''
     sortArgX = np.argsort(points[:,0]) 
     left = np.array([points[x] for x in sortArgX[0:2]])
     right = np.array([points[x] for x in sortArgX[2:4]])
@@ -24,9 +25,10 @@ def getOrderPoints(points):
     return (topLeft, topRight, bottomRight, bottomLeft)
 
 def changeView(img, error = 0.02, debug = None):
-    #debug is a list to be append as below:
-    # debug = [edges_img, all_contours_img, detected_contour_img]
-    #error is the error in Polygon approximation
+    '''
+    debug = [edgesImg, allContoursImg, detectContourImg]
+    error is the error in Polygon approximation
+    '''
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     blur = cv.GaussianBlur(gray, (5,5), 0)
     edges = cv.Canny(blur, 50, 200)
@@ -72,4 +74,5 @@ def changeView(img, error = 0.02, debug = None):
     else:
         if debug != None:
             debug.append(img)
-        raise Exception('Contours not found')
+        print('Contours not found')
+        return img
