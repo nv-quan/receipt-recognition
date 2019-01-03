@@ -1,6 +1,7 @@
 import cv2 as cv
 import numpy as np
 import sys
+
 def getDistance(a,b):
     return np.linalg.norm(a - b)
     
@@ -25,6 +26,7 @@ def getOrderPoints(points):
 #resize the image for faster processing
 inp = sys.argv[1]
 img = cv.imread(inp)
+contourImg = img.copy()
 gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 blur = cv.GaussianBlur(gray, (5,5), 0)
 edges = cv.Canny(blur, 50, 200)
@@ -42,12 +44,25 @@ for contour in contours:
         res.append(approx)
 if len(res) > 0:
     result = max(res, key = cv.contourArea)
-    cv.drawContours(img, [result], -1, (0,255,0), 3) 
+    cv.drawContours(contourImg, [result], -1, (0,255,0), 3) 
 else:
     print("Contours not found")
-tl, tr, br, bl = getOrderPoints(np.array([x[0] for x in result]))
-cv.putText(img, "A", tuple(tl), cv.FONT_HERSHEY_PLAIN, 2.0, (0,0,255))
-cv.putText(img, "B", tuple(tr), cv.FONT_HERSHEY_PLAIN, 2.0, (0,0,255))
-cv.putText(img, "C", tuple(br), cv.FONT_HERSHEY_PLAIN, 2.0, (0,0,255))
-cv.putText(img, "D", tuple(bl), cv.FONT_HERSHEY_PLAIN, 2.0, (0,0,255))
-cv.imwrite('./output/contours.png', img)
+contourPoints = np.array([x[0] for x in result], dtype = "float32");
+topLeft, topRight, bottomRight, bottomLeft = getOrderPoints(contourPoints)
+oldCorners = np.array([topLeft, topRight, bottomRight, bottomLeft], dtype = "float32")
+cv.imwrite('./output/contours.png', contourImg)
+#Compute new width and height
+newWidth = max(getDistance(topLeft, topRight), getDistance(bottomLeft, bottomRight))
+newHeight = max(getDistance(topLeft, bottomLeft), getDistance(topRight, bottomRight))
+#Compute 4 new corners
+newCorners = np.array([
+    [0, 0],
+    [newWidth - 1, 0],
+    [newWidth - 1, newHeight -1],
+    [0, newHeight -1]], dtype = "float32")
+#Compute transformation matrix
+transMat = cv.getPerspectiveTransform(oldCorners, newCorners)
+#Transform
+resultImage = cv.warpPerspective(img, transMat, (newWidth, newHeight))
+cv.imwrite('./output/output.png', resultImage)
+>>>>>>> edit
