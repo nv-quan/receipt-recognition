@@ -20,7 +20,7 @@ Bài toán bao gồm 3 bước:
 Để chuyển được góc nhìn thì trước tiên cần phải xác định được viền bao của tờ hoá đơn. Quá trình này có thể được thực hiện bằng các cách sau:
 ##### Cách 1
 Đầu tiên chuyển ảnh thành ảnh đơn sắc (gray). Áp dụng Gaussian filter để làm mờ ảnh sau đó áp dụng dilation và erosion (1 hoặc nhiều lần) để giữ lại các viền lớn. Tiếp đó sử dụng thuật toán otsu để nhị phân hoá hình ảnh. Từ ảnh đã được nhị phân hoá có thể xác định được contour và xấp xỉ lại thành một hình tứ giác.\
-Đánh giá: Thuật toán này không hoạt động tốt với những hình có độ tương phản giữa nền và vật không được cao. Ví dụ đối với bức hình sau, thuật toán đã thất bại trong việc làm nổi bật viền hình chữ nhật, do đó không xác định được contour.
+Đánh giá: Thuật toán này không hoạt động tốt với những hình có độ tương phản giữa nền và vật không được cao. Ví dụ đối với bức hình sau, thuật toán đã thất bại trong việc làm nổi bật viền hình chữ nhật, do đó không xác định được chính xác contour.
 
 |Input|Output|
 |---|---|
