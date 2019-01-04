@@ -2,7 +2,7 @@
 ### Goal
 To build an application that automatically extracts information from pictures of receipts.
 ### Current progress
-Working on preprocessing images.
+Working on preprocessing images. The progress is reported [here]() (in Vietnamese).
 ### Dependencies
 * python3
 * cv2 (OpenCV 3.4.4)
