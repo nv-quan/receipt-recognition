@@ -25,7 +25,7 @@ Bài toán bao gồm 3 bước:
 |Input|Output|
 |---|---|
 |![Pic of receipt](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/data/001.jpg)|![After processed](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/sample/001-failed.png)|
-#### Cách 2
+##### Cách 2
 Vẫn chuyển ảnh thành đơn sắc như cách 1, nhưng sau đó dùng thuật toán Canny edge detection để xác định viền của vật. Từ ảnh viền tìm contour và xấp xỉ lại thành tứ giác giống cách 1.\
 Đánh giá: Đây là cách cho độ chính xác khá tốt trong nhiều trường hợp. Tuy nhiên thuật toán vẫn thất bại khi background có các chi tiết gây nhầm lẫn (Độ tương phản so với object quá thấp, có các vân thẳng nằm gần với viền của vật,...) hoặc tờ giấy không đủ phẳng. Một điều nữa là phương pháp này không thể áp dụng với những ảnh mà tờ giấy không được chụp đủ bốn góc. Dưới đây là 2 ví dụ cho thấy phương pháp bị thất bại trong việc nhận diện contour.
 
