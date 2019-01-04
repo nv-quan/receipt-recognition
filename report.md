@@ -1,4 +1,8 @@
 # Báo cáo bài toán trích xuất thông tin hoá đơn
+Bài toán bao gồm 3 bước:
+1. [Tiền xử lý](#tiền-xử-lý)
+2. [Nhận diện ký tự quang học (OCR)](#)
+3. [Xử lý và trích xuất thông tin](#)
 ## Tiền xử lý
 ### Một số tiêu chí của một bức ảnh tốt để đưa vào nhận diện
 * Các ký tự có viền rõ nét
