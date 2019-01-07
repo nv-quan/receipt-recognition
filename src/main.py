@@ -6,6 +6,4 @@ import preprocess as pre
 inp = sys.argv[1]
 img = cv.imread(inp)
 processed = pre.changeView(img)
-cv.imshow('Preprocessed', processed)
-cv.waitKey(0)
-cv.destroyAllWindows()
+cv.imwrite('./output/output.png', processed)
