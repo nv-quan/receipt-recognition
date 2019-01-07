@@ -94,11 +94,12 @@ def getCorners(sides, houghSpace):
         i += 1
     return corners
 def changeView(originalImg, Q = 3):
-    '''
-    ratio = 500 / originalImg.shape[1]
-    img = cv.resize(originalImg, None, fx = ratio, fy = ratio, interpolation = cv.INTER_AREA) 
-    '''
+    height = originalImg.shape[0]
+    width = originalImg.shape[1]
     img = originalImg
+    if width > 1000:
+        ratio = 500 / width
+        img = cv.resize(originalImg, None, fx = ratio, fy = ratio, interpolation = cv.INTER_LINEAR) 
     #inp image should have width <= 500px
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     ksize = (5,5)
@@ -106,6 +107,11 @@ def changeView(originalImg, Q = 3):
     threshold1 = 50
     threshold2 = 200
     edges = cv.Canny(blur, threshold1, threshold2)
+    contourImg, contours, hierarchy = cv.findContours(edges, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
+    maxcontour = max(contours, cv.contourArea)
+    cv.drawContours(edges, [contour], -1, (0,255,0), 3)
+    cv.imwrite('./output/largest.png', edges)
+    '''
     houghSpace, maxval = houghTransform(edges)
     sides = getSides(houghSpace, maxval / Q)
     corners = getCorners(sides, houghSpace)
@@ -132,5 +138,7 @@ def changeView(originalImg, Q = 3):
     transMat = cv.getPerspectiveTransform(oldCorners, newCorners)
     #Transform
     resultImage = cv.warpPerspective(img, transMat, (newWidth, newHeight))
+    '''
+    resultImage = img
     return resultImage
 
