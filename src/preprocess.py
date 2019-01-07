@@ -94,8 +94,11 @@ def getCorners(sides, houghSpace):
         i += 1
     return corners
 def changeView(originalImg, Q = 3):
+    '''
     ratio = 500 / originalImg.shape[1]
     img = cv.resize(originalImg, None, fx = ratio, fy = ratio, interpolation = cv.INTER_AREA) 
+    '''
+    img = originalImg
     #inp image should have width <= 500px
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     ksize = (5,5)
@@ -109,13 +112,11 @@ def changeView(originalImg, Q = 3):
     print(corners)
     topLeft, topRight, bottomRight, bottomLeft = getOrderPoints(corners)
     #debug
-    '''
     cv.circle(img, tuple(topLeft.astype(int)), 10, (0,255,0), 3)
     cv.circle(img, tuple(topRight.astype(int)), 10, (0,255,0), 3)
     cv.circle(img, tuple(bottomRight.astype(int)), 10, (0,255,0), 3)
     cv.circle(img, tuple(bottomLeft.astype(int)), 10, (0,255,0), 3)
     cv.imwrite('./output/corners.png', img)
-    '''
     #end debug
     oldCorners = np.array([topLeft, topRight, bottomRight, bottomLeft], dtype = "float32")
     #Compute new width and height
