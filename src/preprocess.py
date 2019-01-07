@@ -26,14 +26,12 @@ def getOrderPoints(points):
         bottomRight = right[1]
         topRight = right[0]
     return (topLeft, topRight, bottomRight, bottomLeft)
-def houghTransform(edges):
-    maxval = 0
+def houghTransform(edges, houghCols = 180):
     imrows, imcols = edges.shape
-    houghRows = math.ceil(math.sqrt(imrows ** 2 + imcols ** 2))
-    houghCols = 200
+    houghRows = 2 * math.ceil(math.sqrt((imrows - 1) ** 2 + (imcols - 1) ** 2)) - 1
     angles = np.zeros(houghCols)
     for col in range(houghCols):
-        angles[col] = col * 2 *  math.pi / houghCols
+        angles[col] = col * math.pi / houghCols
     houghSpace = np.zeros((houghRows, houghCols), np.int_)
     for col in range(imcols):
         for row in range(imrows):
@@ -42,23 +40,35 @@ def houghTransform(edges):
                 y = row
                 for i in range(houghCols):
                     theta = angles[i]
-                    rho = abs(x * math.cos(theta) + y * math.sin(theta))
-                    houghSpace[int(rho), i] += 1
-                    if maxval < houghSpace[int(rho), i]:
-                        maxval = houghSpace[int(rho), i]
-    return houghSpace, maxval
-def getCorners(points):
-    print(points)
+                    rho = x * math.cos(theta) + y * math.sin(theta)
+                    houghSpace[math.floor(rho), i] += 1
+    return houghSpace
+def getRho(r, houghRows):
+    if r <= houghRows / 2:
+        return r
+    else:
+        return - (houghRows / 2 - (r - houghRows / 2) + 1)
+def getCorners(houghSpace, kernel = 21, angleErrors = 30):
+    houghRows, houghCols = houghSpace.shape
+    maxfilter = ndimage.maximum_filter(houghSpace, kernel)
+    minfilter = ndimage.minimum_filter(houghSpace, kernel)
+    maxpoints = np.where((maxima == houghSpace) & ~(minima == houghSpace))
+    maxpointsVal = houghSpace[maxpoints]
+    partition = np.argpartition(maxpointsVal, -4)[np.array([-1,-2,-3,-4])]
+    maxpoints = np.array(maxpoints)[:,partition]
     corners = np.zeros((4,2))
     for i in range(4):
-        theta1 = points[i,1] / 200 * 2 * math.pi #fix 200
-        theta2 = points[(i + 1) % 4, 1] / 200 * 2 * math.pi #fix 200
-        rho1 = points[i,0]
-        rho2 = points[(i + 1) % 4, 0]
-        A = np.array([[math.cos(theta1), math.sin(theta1)],
-            [math.cos(theta2), math.sin(theta2)]])
-        B = np.array([rho1, rho2]) 
-        corners[i] = np.linalg.solve(A, B)
+        theta1 = maxpoints[1, i] / houghCols * math.pi
+        for j in range(i + 1, 4)
+            theta2 = maxpoints[1, j] / houghCols * math.pi
+            if abs(theta1 - theta2) < angleErrors / 180 * math.pi:
+                continue
+            rho1 = getRho(maxpoints[0, i], houghRows)
+            rho2 = getRho(maxpoints[0, j], houghRows)
+            A = np.array([[math.cos(theta1), math.sin(theta1)],
+                          [math.cos(theta2), math.sin(theta2)]])
+            B = np.array([rho1, rho2]) 
+            corners[i] = np.linalg.solve(A, B)
     return corners
 def changeView(img):
     #inp image should have width <= 500px
@@ -68,29 +78,8 @@ def changeView(img):
     threshold1 = 50
     threshold2 = 200
     edges = cv.Canny(blur, threshold1, threshold2)
-    hough, maxval = houghTransform(edges)
-    cv.imwrite('./output/hough.png', hough)
-    kernel = (101,101)
-    maxima = ndimage.maximum_filter(hough, kernel)
-    minima = ndimage.minimum_filter(hough, kernel)
-    linesidx = np.where((maxima == hough) & ~(minima == hough))
-    #lines = np.where(maxima == hough)
-    #linesidx = linesidx[np.array([0,1,2,3]), np.array([0,1,2,3])]
-    print(linesidx)
-    linesval = hough[linesidx]
-    valarg = np.argpartition(linesval, 4)
-    print(valarg)
-    lines = np.array([(linesidx[1][i], linesidx[0][i])  for i in valarg])
-    print(lines)
-    hough = cv.imread('./output/hough.png')
-    for i in range(4):
-        line = lines[i]
-        print(tuple(line))
-        cv.circle(hough, tuple(line), 10, (0,255,0), 4)
-    #getCorners(lines)
-    #print(getCorners(lines))
-    for i in range(len(lines)):
-        cv.line(img, (0, int(lines[i,0] / math.cos(lines[i,1]))), (int(lines[i,0]/math.sin(lines[i,1])),0), (0,255,0), 5)
-    cv.imwrite('./output/lines.png', img)    
-    cv.imwrite('./output/maxima.png', maxima)
-    cv.imwrite('./output/houghMarked.png', hough)
+    houghSpace = houghTransform(edges)
+    corners = getCorners(houghSpace)
+    points = getOrderPoints(corners)
+    
+
