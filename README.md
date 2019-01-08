@@ -13,4 +13,4 @@ $ git clone https://github.com/nv-quan/receipt-recognition.git
 $ cd receipt-recognition
 $ python3 ./src/main.py [input picture]
 ```
-Press any key after the window is shown
+Ouputs is stored in ./output folder
