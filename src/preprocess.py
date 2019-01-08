@@ -42,7 +42,7 @@ def getIntersection(line1, line2):
     #return form: np.array([x, y])
     try:
         result = np.linalg.solve(A, B) 
-    except LinAlgError:
+    except np.linalg.linalg.LinAlgError:
         return (math.inf, math.inf)
     else:
         return result
@@ -100,7 +100,7 @@ def changeView(originalImg):
     lines = cv.HoughLines(closing,1,np.pi/180,50)
     correctLines = list()
     thetaErr = math.pi / 4
-    rhoErr = 50 #need to change this mechanism to work with 021.png
+    rhoErr = 20 #need to change this mechanism to work with 021.png
     diagonal = math.sqrt(height ** 2 + width ** 2)
     for line in lines:
         if len(correctLines) == 4:
@@ -111,21 +111,21 @@ def changeView(originalImg):
             check = checkSimilarAngle(theta, l[1])
             if check[0]:
                 theta1, theta2 = check[1]
-                if abs(rho + l[0]) < rhoErr and abs(theta1 + math.pi - theta2) < thetaErr:
+                if abs(rho + l[0]) < rhoErr + diagonal * math.sin(abs(theta1 + math.pi - theta2)) and abs(theta1 + math.pi - theta2) < thetaErr:
                     isNew = False
-            elif abs(theta - l[1]) < thetaErr and abs(rho - l[0]) < rhoErr:
+            elif abs(theta - l[1]) < thetaErr and abs(rho - l[0]) < rhoErr + math.sin(abs(theta - l[1])) * diagonal:
                 isNew = False
         if isNew:
             correctLines.append([rho, theta])
         else:
             continue
+    for line in correctLines:
+        line[0] = line[0] / ratio
     numLines = len(correctLines)
     if numLines < 3:
         print("Error: Receipt does not have enough edges to detect!")
     elif numLines == 3:
         correctLines = getMissingEdges(correctLines)
-        for line in correctLines:
-            line[0] = line[0] / ratio
         mainRho = correctLines[0][0]
         mainTheta = correctLines[0][1]
         leftBound = (0, 0)
@@ -143,10 +143,10 @@ def changeView(originalImg):
             intersections.remove(math.inf)
         except ValueError:
             pass
-        for point in intersections:
-            cv.circle(originalImg, (int(point[1]), int(point[0])), 3, (0,255,0), 3)
         if debug:
             cv.imwrite('./output/original.png', originalImg)
+            #for point in intersections:
+                #cv.circle(originalImg, (int(point[1]), int(point[0])), 3, (0,255,0), 3)
         keysort = getRho(mainTheta)
         intersections.sort(key = keysort)
         print(intersections)
