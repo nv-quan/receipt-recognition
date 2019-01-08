@@ -127,6 +127,4 @@ def changeView(originalImg):
 def binarize(img):
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     thresh = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2)
-    kernel = np.ones((5,5),np.uint8)
-    closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE, kernel)
-    return closing
+    return thresh
