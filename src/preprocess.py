@@ -79,7 +79,7 @@ def changeView(originalImg, Q = 3):
             y1 = int(y0 + 2000*(a))
             x2 = int(x0 - 2000*(-b))
             y2 = int(y0 - 2000*(a))
-            cv.line(img,(x1,y1),(x2,y2),(0,0,255),2)
+            #cv.line(img,(x1,y1),(x2,y2),(0,0,255),2)
             cv.line(houghImg, (x1,y1), (x2, y2), (255,255,255), 1)
         else:
             continue
@@ -118,3 +118,9 @@ def changeView(originalImg, Q = 3):
         #Transform
         resultImage = cv.warpPerspective(img, transMat, (newWidth, newHeight))
         return resultImage
+def binarize(img):
+    img = cv.cvtColor(img, cv.COLOR_RGB2GRAY)
+    thresh = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2)
+    kernel = np.ones((5,5),np.uint8)
+    closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE, kernel)
+    return closing
