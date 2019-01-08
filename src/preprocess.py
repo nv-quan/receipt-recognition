@@ -26,7 +26,7 @@ def getOrderPoints(points):
         bottomRight = right[1]
         topRight = right[0]
     return (topLeft, topRight, bottomRight, bottomLeft)
-def changeView(originalImg, Q = 3):
+def changeView(originalImg):
     def getLength(contour):
         return cv.arcLength(contour, False)
     height = originalImg.shape[0]
@@ -53,17 +53,13 @@ def changeView(originalImg, Q = 3):
     closing = cv.morphologyEx(black, cv.MORPH_CLOSE, kernel)
     contourImg, contours, hierarchy = cv.findContours(closing, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
     cv.imwrite('./output/closing.png', closing)
-    # error = 0.1
-    # epsilon = error * cv.arcLength(maxcontour, True)
-    # approx = cv.approxPolyDP(maxcontour, epsilon, True)
     cv.cvtColor(black, cv.COLOR_GRAY2BGR)
-    # minvote = 0
-    # maxvote = 500
-    houghImg = np.zeros((int(height * ratio), int(width * ratio)), "uint8")
+    houghImg = np.zeros((height, width), "uint8")
     lines = cv.HoughLines(closing,1,np.pi/180,50)
     correctLines = list()
     thetaErr = math.pi / 6
     rhoErr = 50
+    diagonal = math.sqrt(height ** 2 + width ** 2)
     for line in lines:
         if len(correctLines) == 4:
             break
@@ -83,13 +79,12 @@ def changeView(originalImg, Q = 3):
             correctLines.append((rho, theta))
             a = np.cos(theta)
             b = np.sin(theta)
-            x0 = a*rho
-            y0 = b*rho
-            x1 = int(x0 + 2000*(-b))
-            y1 = int(y0 + 2000*(a))
-            x2 = int(x0 - 2000*(-b))
-            y2 = int(y0 - 2000*(a))
-            #cv.line(img,(x1,y1),(x2,y2),(0,0,255),2)
+            x0 = a*rho / ratio
+            y0 = b*rho / ratio
+            x1 = int(x0 + math.ceil(diagonal) * (-b))
+            y1 = int(y0 + math.ceil(diagonal) * a)
+            x2 = int(x0 - math.ceil(diagonal) * (-b))
+            y2 = int(y0 - math.ceil(diagonal) * a)
             cv.line(houghImg, (x1,y1), (x2, y2), (255,255,255), 1)
         else:
             continue
@@ -127,7 +122,7 @@ def changeView(originalImg, Q = 3):
         #Compute transformation matrix
         transMat = cv.getPerspectiveTransform(oldCorners, newCorners)
         #Transform
-        resultImage = cv.warpPerspective(img, transMat, (newWidth, newHeight))
+        resultImage = cv.warpPerspective(originalImg, transMat, (newWidth, newHeight))
         return resultImage
 def binarize(img):
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
