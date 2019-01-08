@@ -33,9 +33,11 @@ def changeView(originalImg, Q = 3):
     width = originalImg.shape[1]
     img = originalImg
     ratio = 1
-    if width > 1000:
+    if width > 700:
         ratio = 500 / width
         img = cv.resize(originalImg, None, fx = ratio, fy = ratio, interpolation = cv.INTER_LINEAR) 
+    elif width < 300:
+        print("Warning: Image is too small")
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     ksize = (5,5)
     blur = cv.GaussianBlur(gray, ksize, 0)
@@ -46,29 +48,37 @@ def changeView(originalImg, Q = 3):
     maxcontour = max(contours, key = getLength)
     black = np.zeros((int(height * ratio), int(width * ratio)), "uint8")
     cv.drawContours(black, [maxcontour], -1, (255,255,255), 1)
-    dilate = cv.dilate(black, (7,7))
-    erode = cv.erode(dilate, (7,7))
-    contourImg, contours, hierarchy = cv.findContours(erode, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    maxcontour = max(contours, key = getLength)
-    cv.imwrite('./output/erode.png', erode)
-    error = 0.1
-    epsilon = error * cv.arcLength(maxcontour, True)
-    approx = cv.approxPolyDP(maxcontour, epsilon, True)
-    cv.cvtColor(black, cv.COLOR_GRAY2RGB)
     cv.imwrite('./output/largest.png', black)
-    minvote = 0
-    maxvote = 500
+    kernel = (7,7)
+    closing = cv.morphologyEx(black, cv.MORPH_CLOSE, kernel)
+    contourImg, contours, hierarchy = cv.findContours(closing, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    cv.imwrite('./output/closing.png', closing)
+    # error = 0.1
+    # epsilon = error * cv.arcLength(maxcontour, True)
+    # approx = cv.approxPolyDP(maxcontour, epsilon, True)
+    cv.cvtColor(black, cv.COLOR_GRAY2BGR)
+    # minvote = 0
+    # maxvote = 500
     houghImg = np.zeros((int(height * ratio), int(width * ratio)), "uint8")
-    lines = cv.HoughLines(erode,1,np.pi/180,50)
+    lines = cv.HoughLines(closing,1,np.pi/180,50)
     correctLines = list()
     thetaErr = math.pi / 6
-    rhoErr = 180
+    rhoErr = 50
     for line in lines:
+        if len(correctLines) == 4:
+            break
         rho,theta = line[0]
         isNew = True
         for l in correctLines:
-            if abs(theta - l[1]) < thetaErr and abs(rho - l[0]) < rhoErr:
-                isNew = False
+            if theta <= thetaErr / 2 and l[1] >= math.pi - thetaErr / 2:
+                if abs(rho + l[0]) < rhoErr and abs(theta + math.pi - l[1]) < thetaErr:
+                    isNew = False
+            elif l[1] <= thetaErr / 2 and theta >= math.pi - thetaErr / 2:
+                if abs(rho + l[0]) < rhoErr and abs(l[1] + math.pi - theta) < thetaErr:
+                    isNew = False
+            else:
+                if abs(theta - l[1]) < thetaErr and abs(rho - l[0]) < rhoErr:
+                    isNew = False
         if isNew:
             correctLines.append((rho, theta))
             a = np.cos(theta)
@@ -83,7 +93,7 @@ def changeView(originalImg, Q = 3):
             cv.line(houghImg, (x1,y1), (x2, y2), (255,255,255), 1)
         else:
             continue
-    #print(correctLines)
+    print(correctLines)
     contourImg, contours, hierarchy = cv.findContours(houghImg, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
     error = 0.01
     quadri = list()
@@ -96,6 +106,7 @@ def changeView(originalImg, Q = 3):
     if len(quadri) == 0:
         print("Error, contours not found")
         cv.drawContours(houghImg, contours, -1, (255,255,0), 2)
+        cv.imwrite('./output/hough.png', houghImg)
         return originalImg
     else:
         maxcontour = max(quadri, key = getArea)
@@ -119,7 +130,7 @@ def changeView(originalImg, Q = 3):
         resultImage = cv.warpPerspective(img, transMat, (newWidth, newHeight))
         return resultImage
 def binarize(img):
-    img = cv.cvtColor(img, cv.COLOR_RGB2GRAY)
+    img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     thresh = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2)
     kernel = np.ones((5,5),np.uint8)
     closing = cv.morphologyEx(thresh, cv.MORPH_CLOSE, kernel)
