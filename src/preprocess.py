@@ -3,6 +3,7 @@ from scipy import stats
 import numpy as np
 import math
 from scipy import ndimage
+debug = False
 def getDistance(a,b):
     return np.linalg.norm(a - b)
 def getArea(contour):
@@ -33,6 +34,7 @@ def changeView(originalImg):
     width = originalImg.shape[1]
     img = originalImg
     ratio = 1
+    #resize image for faster processing
     if width > 700:
         ratio = 500 / width
         img = cv.resize(originalImg, None, fx = ratio, fy = ratio, interpolation = cv.INTER_LINEAR) 
@@ -48,11 +50,13 @@ def changeView(originalImg):
     maxcontour = max(contours, key = getLength)
     black = np.zeros((int(height * ratio), int(width * ratio)), "uint8")
     cv.drawContours(black, [maxcontour], -1, (255,255,255), 1)
-    cv.imwrite('./output/largest.png', black)
+    if debug == True:
+        cv.imwrite('./output/largest.png', black)
     kernel = (7,7)
     closing = cv.morphologyEx(black, cv.MORPH_CLOSE, kernel)
     contourImg, contours, hierarchy = cv.findContours(closing, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
-    cv.imwrite('./output/closing.png', closing)
+    if debug == True:
+        cv.imwrite('./output/closing.png', closing)
     cv.cvtColor(black, cv.COLOR_GRAY2BGR)
     houghImg = np.zeros((height, width), "uint8")
     lines = cv.HoughLines(closing,1,np.pi/180,50)
@@ -88,7 +92,8 @@ def changeView(originalImg):
             cv.line(houghImg, (x1,y1), (x2, y2), (255,255,255), 1)
         else:
             continue
-    print(correctLines)
+    if debug == True:
+        print(correctLines)
     contourImg, contours, hierarchy = cv.findContours(houghImg, cv.RETR_LIST, cv.CHAIN_APPROX_SIMPLE)
     error = 0.01
     quadri = list()
@@ -101,12 +106,17 @@ def changeView(originalImg):
     if len(quadri) == 0:
         print("Error, contours not found")
         cv.drawContours(houghImg, contours, -1, (255,255,0), 2)
-        cv.imwrite('./output/hough.png', houghImg)
+        if debug == True:
+            cv.imwrite('./output/hough.png', houghImg)
         return originalImg
     else:
         maxcontour = max(quadri, key = getArea)
         cv.drawContours(houghImg, [maxcontour], -1, (0,255,0), 2)
-        cv.imwrite('./output/hough.png', houghImg)
+        contourImg = originalImg.copy() 
+        cv.drawContours(contourImg, [maxcontour], -1, (0,255,0), 2)
+        if debug == True:
+            cv.imwrite('./output/hough.png', houghImg)
+            cv.imwrite('./output/bound.png', contourImg)
         contourPoints = np.array([x[0] for x in maxcontour], dtype = "float32")
         topLeft, topRight, bottomRight, bottomLeft = getOrderPoints(contourPoints)
         oldCorners = np.array([topLeft, topRight, bottomRight, bottomLeft], dtype = "float32")
@@ -123,6 +133,8 @@ def changeView(originalImg):
         transMat = cv.getPerspectiveTransform(oldCorners, newCorners)
         #Transform
         resultImage = cv.warpPerspective(originalImg, transMat, (newWidth, newHeight))
+        if debug == True:
+            cv.imwrite('./output/changeview.png', resultImage)
         return resultImage
 def binarize(img):
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
