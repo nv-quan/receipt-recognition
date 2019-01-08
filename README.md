@@ -13,5 +13,5 @@ $ git clone https://github.com/nv-quan/receipt-recognition.git
 $ cd receipt-recognition
 $ python3 ./src/main.py [input picture]
 ```
-Change `debug` in ./src/preprocess.py to `True` to see all the middle steps in ./output
+Change `debug` in ./src/preprocess.py to `True` to see all the middle steps.\
 Ouputs are stored in ./output folder
