@@ -65,3 +65,8 @@ Các bước được mô tả bởi ví dụ sau:
 |![1](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/gray.png)|![2](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/blur.png)|![3](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/edges.png)|![4](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/contours.png)|
 |5|6|7|8|
 |![5](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/maxcontour.png)|![6](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/alllines.png)|![7](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/fourlines.png)|![8](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/output.png)|
+Đối với các trường hợp bức hình hoá đơn bị thiếu một cạnh, cạnh bị thiếu sẽ được tạo ra bằng cách lấy song song với cạnh đã có. Sau đây là một ví dụ:
+|Input|Viền xác định được|Tạo thêm cạnh|Output|
+|---|---|---|---|
+|![Input](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/edgemissing/original.png)|![Edges](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/edgemissing/largest.png)|![Hough](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/edgemissing/closing.png)|![Output](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/edgemissing/output.png)|
+
