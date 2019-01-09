@@ -16,22 +16,31 @@ Bài toán bao gồm 3 bước:
 * [ ] Khử nhiễu
 * [ ] * Phân tích bố cục
 ### Thử nghiệm
+
 #### Chuyển góc nhìn
+
 Để chuyển được góc nhìn thì trước tiên cần phải xác định được viền bao của tờ hoá đơn. Quá trình này có thể được thực hiện bằng các cách sau:
+
 ##### Cách 1
-Đầu tiên chuyển ảnh thành ảnh đơn sắc (gray). Áp dụng Gaussian filter để làm mờ ảnh sau đó áp dụng dilation và erosion (1 hoặc nhiều lần) để giữ lại các viền lớn. Tiếp đó sử dụng thuật toán otsu để nhị phân hoá hình ảnh. Từ ảnh đã được nhị phân hoá có thể xác định được contour và xấp xỉ lại thành một hình tứ giác.\
+1. Chuyển ảnh thành ảnh đơn sắc (gray). 
+2. Áp dụng Gaussian filter để làm mờ ảnh sau đó 
+3. Ap dụng Closing Transformation (Dilation và Erosion) (1 hoặc nhiều lần) để giữ lại các viền lớn. 
+4. Sử dụng thuật toán otsu để nhị phân hoá hình ảnh. 
+5. Từ ảnh đã được nhị phân hoá có thể xác định được contour và xấp xỉ lại thành một hình tứ giác.\
+
 Đánh giá: Thuật toán này không hoạt động tốt với những hình có độ tương phản giữa nền và vật không được cao. Sau đây là ví dụ cho trường hợp thuật toán bị thất bại trong việc nhận diện. 
 
 |Input|Output|Nhận xét|
 |---|---|---|
 |![Pic of receipt](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/data/001.jpg)|![After processed](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/sample/001-failed.png)|thuật toán đã thất bại trong việc làm nổi bật viền hình chữ nhật, do đó không xác định được chính xác contour.|
+
 ##### Cách 2
 1. Vẫn chuyển ảnh thành đơn sắc như cách 1. 
 2. Áp dụng Gaussian filter để giữ lại các viền chính
 3. Sử dụng thuật toán Canny edge detection để xác định viền của vật. 
 4. Từ ảnh viền tìm contour. 
 5. Xấp xỉ lại thành tứ giác.
-6. Từ contour tìm được áp dụng một ma trận biến hình để chuyển góc nhìn vật
+6. Từ contour tìm được áp dụng một ma trận biến hình để chuyển góc nhìn vật.\
 Đánh giá: Đây là cách cho độ chính xác khá tốt trong nhiều trường hợp. Tuy nhiên thuật toán vẫn thất bại khi background có các chi tiết gây nhầm lẫn (Độ tương phản so với object quá thấp, có các vân thẳng nằm gần với viền của vật,...) hoặc tờ giấy không đủ phẳng. Một điều nữa là phương pháp này không thể áp dụng với những ảnh mà tờ giấy không được chụp đủ bốn góc. Dưới đây là 2 ví dụ cho thấy phương pháp bị thất bại trong việc nhận diện contour.
 
 |Input|Output|Nhận xét|
@@ -53,5 +62,5 @@ Các bước được mô tả bởi ví dụ sau:
 
 |1|2|3|4|
 |---|---|---|---|
-|![1](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/data/011.jpg)|||
-|5|6|7|8|
+|![1](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/gray.png)|![2](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/blur.png)|![3](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/edges.png)|
+|![5](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/maxcontour.png)|![6](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/alllines.png)|![7](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/fourlines.png)|![8](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/output.png)|
