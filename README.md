@@ -14,7 +14,8 @@ $ cd receipt-recognition
 $ python3 ./src/main.py [input picture] [output file name]
 ```
 For example:
-```python3 ./src/main.py ./data/011.jpg 011
+```sh
+python3 ./src/main.py ./data/011.jpg 011
 ```
 Change `debug` in ./src/preprocess.py to `True` to see all the middle steps.\
 Ouputs are stored in ./output folder
