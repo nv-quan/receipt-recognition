@@ -4,7 +4,7 @@ from scipy import stats
 import numpy as np
 import math
 from scipy import ndimage
-debug = True
+debug = False
 report = False
 def getDistance(a,b):
     return np.linalg.norm(a - b)
