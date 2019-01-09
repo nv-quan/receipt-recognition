@@ -45,8 +45,8 @@ Bài toán bao gồm 3 bước:
 
 |Input|Output|Nhận xét|
 |---|---|---|
-|![Pic of receipt](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/data/011.jpg)|![After processed](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/sample/011-failed.png)|Nền bức ảnh có các vân thẳng khiến Canny edge detection bị nhầm lẫn.|
-|![Pic of receipt](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/data/007.jpg)|![After processed](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/sample/007-failed.png)|Mặc dù thuật toán đã nhận diện khá tốt các đường bao nhưng lại không thể xấp xỉ được thành hình tứ giác do các viền xác định được không liền mạch|
+|![Pic of receipt](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/data/011.jpg)|![After processed](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/sample/011-failed.png)|Nền bức ảnh có các vân thẳng khiến Canny edge detection bị nhầm lẫn.|
+|![Pic of receipt](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/data/007.jpg)|![After processed](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/sample/007-failed.png)|Mặc dù thuật toán đã nhận diện khá tốt các đường bao nhưng lại không thể xấp xỉ được thành hình tứ giác do các viền xác định được không liền mạch|
 
 ##### Cách 3
 1. Chuyển ảnh thành đơn sắc
