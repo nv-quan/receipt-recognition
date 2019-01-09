@@ -5,6 +5,7 @@ import numpy as np
 import math
 from scipy import ndimage
 debug = False
+report = False
 def getDistance(a,b):
     return np.linalg.norm(a - b)
 def getArea(contour):
@@ -41,13 +42,8 @@ def getIntersection(line1, line2):
     if debug:
         print(A)
         print(B)
-
-    #return form: np.array([x, y])
-    #try:
+    #return form: np.array([x, y]), may raise exception
     result = np.linalg.solve(A, B) 
-    #except np.linalg.linalg.LinAlgError:
-        #return (math.inf, math.inf)
-    #else:
     return result
 def changeView(originalImg):
     def getLength(contour):
@@ -61,6 +57,7 @@ def changeView(originalImg):
             return False, None
     #get missing edges in case only three edges are detected
     #return [lonely edges, pair edges]
+    #this need to be fix to work with inp 004 and 030
     def getMissingEdges(correctLines):
         if checkSimilarAngle(correctLines[0][1], correctLines[1][1]):
             return [correctLines[2], correctLines[0], correctLines[1]]
@@ -73,8 +70,23 @@ def changeView(originalImg):
             #point is of the form (x, y)
             return point[0] * math.cos(theta) + point[1] * math.sin(theta)
         return result
+    def drawLines(correctLines, img, diagonal, thick = 3):
+        for line in correctLines:
+            rho, theta = line
+            a = np.cos(theta)
+            b = np.sin(theta)
+            x0 = a*rho
+            y0 = b*rho
+            x1 = int(x0 + math.ceil(diagonal) * (-b))
+            y1 = int(y0 + math.ceil(diagonal) * a)
+            x2 = int(x0 - math.ceil(diagonal) * (-b))
+            y2 = int(y0 - math.ceil(diagonal) * a)
+            cv.line(img, (x1,y1), (x2, y2), (255,255,255), thick)
+        if debug == True:
+            print(correctLines)
     height = originalImg.shape[0]
     width = originalImg.shape[1]
+    diagonal = math.sqrt(height ** 2 + width ** 2)
     img = originalImg
     ratio = 1
     #resize image for faster processing
@@ -84,16 +96,29 @@ def changeView(originalImg):
     elif width < 300:
         print("Warning: Image is too small")
     gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
+    if report:
+        cv.imwrite('./report/gray.png', gray)
     ksize = (5,5)
     blur = cv.GaussianBlur(gray, ksize, 0)
+    if report:
+        cv.imwrite('./report/blur.png', blur)
     threshold1 = 50
     threshold2 = 200
     edges = cv.Canny(blur, threshold1, threshold2)
+    if report:
+        cv.imwrite('./report/edges.png', edges)
     contourImg, contours, hierarchy = cv.findContours(edges, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    if report:
+        allcontour = cv.cvtColor(edges.copy(), cv.COLOR_GRAY2BGR)
+        cv.drawContours(allcontour, contours, -1, (0,255,0), 2)
+        cv.imwrite('./report/contours.png', allcontour)
     maxcontour = max(contours, key = getLength)
+    #the below code snipset needs to be optimized and cleaned redundant parts
     black = np.zeros((int(height * ratio), int(width * ratio)), "uint8")
     cv.drawContours(black, [maxcontour], -1, (255,255,255), 1)
-    if debug == True:
+    if report:
+        cv.imwrite('./report/maxcontour.png', black)
+    if debug:
         cv.imwrite('./output/largest.png', black)
     kernel = (7,7)
     closing = cv.morphologyEx(black, cv.MORPH_CLOSE, kernel)
@@ -101,10 +126,13 @@ def changeView(originalImg):
     cv.cvtColor(black, cv.COLOR_GRAY2BGR)
     houghImg = np.zeros((height, width), "uint8")
     lines = cv.HoughLines(closing,1,np.pi/180,50)
+    if report:
+        blackHough = np.zeros((int(height * ratio), int(width * ratio)), "uint8")
+        drawLines(lines[:,0,:], blackHough, diagonal, 1)
+        cv.imwrite('./report/alllines.png', blackHough)
     correctLines = list()
     thetaErr = math.pi / 4
     rhoErr = 20 
-    diagonal = math.sqrt(height ** 2 + width ** 2)
     if debug:
         print("Diagonal %d" % diagonal)
     for line in lines:
@@ -157,9 +185,6 @@ def changeView(originalImg):
                     intersections.append(intersection)
         if debug:
             cv.imwrite('./output/original.png', originalImg)
-            # if debug:
-            #     for point in intersections:
-            #         cv.circle(originalImg, (int(point[1]), int(point[0])), 3, (0,255,0), 3)
         keysort = getRho(mainTheta)
         intersections.sort(key = keysort)
         if debug:
@@ -173,19 +198,9 @@ def changeView(originalImg):
             correctLines.append((rho1, mainTheta))
         else:
             correctLines.append((rho2, mainTheta))
-    for line in correctLines:
-        rho, theta = line
-        a = np.cos(theta)
-        b = np.sin(theta)
-        x0 = a*rho
-        y0 = b*rho
-        x1 = int(x0 + math.ceil(diagonal) * (-b))
-        y1 = int(y0 + math.ceil(diagonal) * a)
-        x2 = int(x0 - math.ceil(diagonal) * (-b))
-        y2 = int(y0 - math.ceil(diagonal) * a)
-        cv.line(houghImg, (x1,y1), (x2, y2), (255,255,255), 3)
-    if debug == True:
-        print(correctLines)
+    drawLines(correctLines, houghImg, diagonal)
+    if report:
+        cv.imwrite('./report/fourlines.png', houghImg)
     kernel = (7,7)
     closing = cv.morphologyEx(houghImg, cv.MORPH_CLOSE, kernel)
     if debug == True:
@@ -204,6 +219,8 @@ def changeView(originalImg):
         cv.drawContours(houghImg, contours, -1, (255,255,0), 2)
         if debug == True:
             cv.imwrite('./output/hough.png', houghImg)
+        if report:
+            cv.imwrite('./report/bound.png', houghImg)
         return originalImg
     else:
         maxcontour = max(quadri, key = getArea)
@@ -231,7 +248,10 @@ def changeView(originalImg):
         resultImage = cv.warpPerspective(originalImg, transMat, (newWidth, newHeight))
         if debug == True:
             cv.imwrite('./output/changeview.png', resultImage)
+        if report:
+            cv.imwrite('./report/output.png', resultImage)
         return resultImage
+#find a better way to binarize
 def binarize(img):
     img = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
     #thresh = cv.adaptiveThreshold(img, 255, cv.ADAPTIVE_THRESH_GAUSSIAN_C, cv.THRESH_BINARY, 11, 2)
