@@ -63,4 +63,5 @@ Các bước được mô tả bởi ví dụ sau:
 |1|2|3|4|
 |---|---|---|---|
 |![1](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/gray.png)|![2](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/blur.png)|![3](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/edges.png)|![4](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/contours.png)|
+|5|6|7|8|
 |![5](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/maxcontour.png)|![6](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/alllines.png)|![7](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/fourlines.png)|![8](https://raw.githubusercontent.com/nv-quan/receipt-recognition/report/report/output.png)|
