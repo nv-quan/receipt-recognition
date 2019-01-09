@@ -1,9 +1,10 @@
+#Fixing bug in line 118. Bug in input 004
 import cv2 as cv
 from scipy import stats
 import numpy as np
 import math
 from scipy import ndimage
-debug = True
+debug = False
 def getDistance(a,b):
     return np.linalg.norm(a - b)
 def getArea(contour):
@@ -29,23 +30,25 @@ def getOrderPoints(points):
     return (topLeft, topRight, bottomRight, bottomLeft)
 def getIntersection(line1, line2):
     #lines are of the form (rho, theta)
-    print(line1)
-    print(line2)
+    if debug:
+        print(line1)
+        print(line2)
     rho1, theta1 = line1
     rho2, theta2 = line2
     A = np.array([[math.cos(theta1), math.sin(theta1)],
                 [math.cos(theta2), math.sin(theta2)]])
     B = np.array([rho1, rho2]) 
-    print(A)
-    print(B)
+    if debug:
+        print(A)
+        print(B)
 
     #return form: np.array([x, y])
-    try:
-        result = np.linalg.solve(A, B) 
-    except np.linalg.linalg.LinAlgError:
-        return (math.inf, math.inf)
-    else:
-        return result
+    #try:
+    result = np.linalg.solve(A, B) 
+    #except np.linalg.linalg.LinAlgError:
+        #return (math.inf, math.inf)
+    #else:
+    return result
 def changeView(originalImg):
     def getLength(contour):
         return cv.arcLength(contour, False)
@@ -100,8 +103,10 @@ def changeView(originalImg):
     lines = cv.HoughLines(closing,1,np.pi/180,50)
     correctLines = list()
     thetaErr = math.pi / 4
-    rhoErr = 20 #need to change this mechanism to work with 021.png
+    rhoErr = 20 
     diagonal = math.sqrt(height ** 2 + width ** 2)
+    if debug:
+        print("Diagonal %d" % diagonal)
     for line in lines:
         if len(correctLines) == 4:
             break
@@ -111,6 +116,10 @@ def changeView(originalImg):
             check = checkSimilarAngle(theta, l[1])
             if check[0]:
                 theta1, theta2 = check[1]
+                if debug:
+                    print("rho + l[0] %d" % abs(rho + l[0]))
+                    print(theta1 + math.pi - theta2)
+                    print(rhoErr + diagonal * math.sin(abs(theta1 + math.pi - theta2)))
                 if abs(rho + l[0]) < rhoErr + diagonal * math.sin(abs(theta1 + math.pi - theta2)) and abs(theta1 + math.pi - theta2) < thetaErr:
                     isNew = False
             elif abs(theta - l[1]) < thetaErr and abs(rho - l[0]) < rhoErr + math.sin(abs(theta - l[1])) * diagonal:
@@ -134,26 +143,32 @@ def changeView(originalImg):
         bottomBound = (height, math.pi / 2)
         bounds = (leftBound, rightBound, topBound, bottomBound)
         intersections = list()
-        print(correctLines)
-        print(bounds)
+        if debug:
+            print(correctLines)
+            print(bounds)
         for bound in bounds:
             for i in range(1,3):
-                intersections.append(getIntersection(correctLines[i], bound))
-        try:
-            intersections.remove(math.inf)
-        except ValueError:
-            pass
+                try:
+                    intersection = getIntersection(correctLines[i], bound)
+#                    intersections.append(getIntersection(correctLines[i], bound))
+                except np.linalg.linalg.LinAlgError:
+                    continue
+                else:
+                    intersections.append(intersection)
         if debug:
             cv.imwrite('./output/original.png', originalImg)
-            #for point in intersections:
-                #cv.circle(originalImg, (int(point[1]), int(point[0])), 3, (0,255,0), 3)
+            # if debug:
+            #     for point in intersections:
+            #         cv.circle(originalImg, (int(point[1]), int(point[0])), 3, (0,255,0), 3)
         keysort = getRho(mainTheta)
         intersections.sort(key = keysort)
-        print(intersections)
+        if debug:
+            print(intersections)
         rho1 = keysort(intersections[int(len(intersections) / 2) - 1])
         rho2 = keysort(intersections[int(len(intersections) / 2)])
-        print(rho1)
-        print(rho2)
+        if debug:
+            print(rho1)
+            print(rho2)
         if abs(mainRho - rho1) > abs(mainRho - rho2):
             correctLines.append((rho1, mainTheta))
         else:
@@ -185,7 +200,7 @@ def changeView(originalImg):
             quadri.append(approx)
     houghImg = cv.cvtColor(houghImg, cv.COLOR_GRAY2RGB)
     if len(quadri) == 0:
-        print("Error, contours not found")
+        print("Error: contours not found")
         cv.drawContours(houghImg, contours, -1, (255,255,0), 2)
         if debug == True:
             cv.imwrite('./output/hough.png', houghImg)

@@ -4,7 +4,8 @@ import sys
 import preprocess as pre
 
 inp = sys.argv[1]
+out = sys.argv[2]
 img = cv.imread(inp)
 changeview = pre.changeView(img)
 output = pre.binarize(changeview)            
-cv.imwrite('./output/output.png', output)
+cv.imwrite('./output/' + out + '.png', output)
