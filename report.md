@@ -20,13 +20,18 @@ Bài toán bao gồm 3 bước:
 Để chuyển được góc nhìn thì trước tiên cần phải xác định được viền bao của tờ hoá đơn. Quá trình này có thể được thực hiện bằng các cách sau:
 ##### Cách 1
 Đầu tiên chuyển ảnh thành ảnh đơn sắc (gray). Áp dụng Gaussian filter để làm mờ ảnh sau đó áp dụng dilation và erosion (1 hoặc nhiều lần) để giữ lại các viền lớn. Tiếp đó sử dụng thuật toán otsu để nhị phân hoá hình ảnh. Từ ảnh đã được nhị phân hoá có thể xác định được contour và xấp xỉ lại thành một hình tứ giác.\
-Đánh giá: Thuật toán này không hoạt động tốt với những hình có độ tương phản giữa nền và vật không được cao. Ví dụ đối với bức hình sau, thuật toán đã thất bại trong việc làm nổi bật viền hình chữ nhật, do đó không xác định được chính xác contour.
+Đánh giá: Thuật toán này không hoạt động tốt với những hình có độ tương phản giữa nền và vật không được cao. Sau đây là ví dụ cho trường hợp thuật toán bị thất bại trong việc nhận diện. 
 
-|Input|Output|
-|---|---|
-|![Pic of receipt](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/data/001.jpg)|![After processed](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/sample/001-failed.png)|
+|Input|Output|Nhận xét|
+|---|---|---|
+|![Pic of receipt](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/data/001.jpg)|![After processed](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/sample/001-failed.png)|thuật toán đã thất bại trong việc làm nổi bật viền hình chữ nhật, do đó không xác định được chính xác contour.|
 ##### Cách 2
-Vẫn chuyển ảnh thành đơn sắc như cách 1, nhưng sau đó dùng thuật toán Canny edge detection để xác định viền của vật. Từ ảnh viền tìm contour và xấp xỉ lại thành tứ giác giống cách 1.\
+1. Vẫn chuyển ảnh thành đơn sắc như cách 1. 
+2. Áp dụng Gaussian filter để giữ lại các viền chính
+3. Sử dụng thuật toán Canny edge detection để xác định viền của vật. 
+4. Từ ảnh viền tìm contour. 
+5. Xấp xỉ lại thành tứ giác.
+6. Từ contour tìm được áp dụng một ma trận biến hình để chuyển góc nhìn vật
 Đánh giá: Đây là cách cho độ chính xác khá tốt trong nhiều trường hợp. Tuy nhiên thuật toán vẫn thất bại khi background có các chi tiết gây nhầm lẫn (Độ tương phản so với object quá thấp, có các vân thẳng nằm gần với viền của vật,...) hoặc tờ giấy không đủ phẳng. Một điều nữa là phương pháp này không thể áp dụng với những ảnh mà tờ giấy không được chụp đủ bốn góc. Dưới đây là 2 ví dụ cho thấy phương pháp bị thất bại trong việc nhận diện contour.
 
 |Input|Output|Nhận xét|
@@ -34,4 +39,18 @@ Vẫn chuyển ảnh thành đơn sắc như cách 1, nhưng sau đó dùng thu�
 |![Pic of receipt](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/data/011.jpg)|![After processed](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/sample/011-failed.png)|Nền bức ảnh có các vân thẳng khiến Canny edge detection bị nhầm lẫn.|
 |![Pic of receipt](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/data/007.jpg)|![After processed](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/sample/007-failed.png)|Mặc dù thuật toán đã nhận diện khá tốt các đường bao nhưng lại không thể xấp xỉ được thành hình tứ giác do các viền xác định được không liền mạch|
 
+##### Cách 3
+1. Chuyển ảnh thành đơn sắc
+2. Áp dụng Guassian filter để giữ lại các viền chính
+3. Sử dụng thuật toán Canny edge detection để xác định viền của vật.
+4. Từ viền ảnh tìm contours.
+5. Giữ lại contours dài nhất và ghi lại contour đó vào một ảnh mới dưới dạng binary
+6. Từ bức ảnh mới áp dụng thuật toán Hough Transformation để tìm tất cả các đường thẳng
+7. Giữ lại 4 đường thẳng có số vote trong hough space lớn nhất với điều kiện không đường thẳng nào quá gần nhau 
+8. Xác định 4 góc sau đó áp dụng ma trận chuyển góc nhìn để đưa ra output
 
+Các bước được mô tả bởi ví dụ sau:
+|1|2|3|4|
+|---|---|---|---|
+|![1](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/data/011.jpg)|||
+|5|6|7|8|
