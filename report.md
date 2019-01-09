@@ -50,6 +50,7 @@ Bài toán bao gồm 3 bước:
 8. Xác định 4 góc sau đó áp dụng ma trận chuyển góc nhìn để đưa ra output
 
 Các bước được mô tả bởi ví dụ sau:
+
 |1|2|3|4|
 |---|---|---|---|
 |![1](https://raw.githubusercontent.com/nv-quan/receipt-recognition/master/data/011.jpg)|||
