@@ -11,7 +11,7 @@ Bài toán bao gồm 3 bước:
 * Ít nhiễu
 ### Các bước cần thực hiện
 * [x] Tăng hoặc giảm kích thước ảnh để có kích cỡ chữ phù hợp. Với cỡ chữ 10pt thì DPI tối thiểu phải đạt 300dpi
-* [ ] Chuyển góc nhìn (perspective transform) về dạng thẳng góc, cắt và phóng to phần chứa ký tự
+* [x] Chuyển góc nhìn (perspective transform) về dạng thẳng góc, cắt và phóng to phần chứa ký tự
 * [ ] Nhị phân hoá
 * [ ] Khử nhiễu
 * [ ] * Phân tích bố cục
