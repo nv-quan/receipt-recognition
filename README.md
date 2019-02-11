@@ -25,7 +25,7 @@ In ./docsample/sample.json, change `sample` to the directory of the sample image
 python3 ./src/register.py
 ```
 Drag in the image to detect sample region, type the ids for them.
-##### Run
+#### Run
 ```
 $ python3 ./src/main.py
 ```
