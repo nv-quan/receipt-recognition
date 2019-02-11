@@ -1,0 +1,10 @@
+{
+    "input file": "../receipt-recognition-data/034.jpg",
+    "input folder": null,
+    "input mode": "single",
+    "ouput folder": "./output/",
+    "output extention": "png",
+    "output name": "input",
+    "run mode": "normal",
+    "sample": "./docsample/sample.json"
+}
