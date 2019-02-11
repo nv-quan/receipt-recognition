@@ -23,7 +23,7 @@ In ./src/config.json,
 In ./docsample/sample.json, `sample` is the directory of the sample image
 #### Register correct regions
 ```sh
-python3 ./src/register.py
+$ python3 ./src/register.py
 ```
 Drag in the image to detect sample region, type the ids for them.
 #### Run
