@@ -16,10 +16,11 @@ $ cd receipt-recognition
 #### Config
 In ./src/config.json, 
 - `input file`: directory of input picture
-- `input mode`: `single` for to process file at a time, `folder` for process all file in one folder
+- `input mode`: `single` to process one file at a time, `folder` to process all file in one folder
 - `input folder`: directory of input folder if `input mode` is `folder`
 - `run mode`: `normal` for normal mode, `debug` for debug
-In ./docsample/sample.json, change `sample` to the directory of the sample image
+
+In ./docsample/sample.json, `sample` is the directory of the sample image
 #### Register correct regions
 ```sh
 python3 ./src/register.py
