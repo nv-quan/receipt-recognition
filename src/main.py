@@ -14,12 +14,22 @@ def main():
     changeview = pre.changeView(img)
     if reportFlag:
         cv.imwrite('./output/changeview.png', changeview)
-    stdH = config['document']['height']
-    stdW = config['document']['width']
+    stdH = sample['document']['height']
+    stdW = sample['document']['width']
     stdSizeImg = cv.resize(changeview, (stdW, stdH))
     gray = cv.cvtColor(stdSizeImg, cv.COLOR_BGR2GRAY)
     dt.report = reportFlag
-    textBoxes = dt.findText(gray)
+    detected = dt.getBoxes(gray, sample['boxes'])
+#    print(json.dumps(detected, indent = 4))
+    for boxId in detected:
+        if detected[boxId] == None:
+            continue
+        x,y,w,h = detected[boxId]
+        cv.rectangle(stdSizeImg, (x,y), (x + w, y + h), (0, 255, 0), 2)
+        cv.putText(stdSizeImg, boxId, (x,y), cv.FONT_HERSHEY_PLAIN, 1.0, (255,255,0), 2)
+    cv.imshow('test', stdSizeImg)
+    cv.waitKey(0)
+    cv.destroyAllWindows()
 
 #Global constant (do not change)
 debugFlag = False
@@ -43,7 +53,7 @@ if config['input mode'] == 'single':
 elif config['input mode'] == 'folder':
     pass
 #output
-if config['output name'] = 'input':
+if config['output name'] == 'input':
     pass
 configFile.close()
 sampleFile.close()

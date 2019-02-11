@@ -30,4 +30,29 @@ def findText(img):
         boxesFile.write(json.dumps(textBoxes, indent = 4))
         boxesFile.close()
     return textBoxes
-def compare(rect1, rect2):
+def getOverlapRatio(rectA, rectB):
+    xA1,yA1,wA,hA = rectA
+    xA2,yA2 = xA1 + wA, yA1 + hA
+    xB1,yB1,wB,hB = rectB
+    xB2,yB2 = xB1 + wB, yB1 + hB
+    intersectArea = max(0, min(xA2, xB2) - max(xA1, xB1)) * max(0, min(yA2, yB2) - max(yA1, yB1))
+    areaA = wA * hA
+    areaB = wB * hB
+    ratio = intersectArea / areaA
+    return ratio
+def locateBoxes(boxes, samples):
+    location = dict()
+    for boxId in samples:
+        sample = samples[boxId]
+        maxratio = 0
+        mostCorrectBox = None
+        for box in boxes:
+            ratio = getOverlapRatio(sample, box)
+            if ratio > maxratio:
+                maxratio = ratio
+                mostCorrectBox = box
+        location[boxId] = mostCorrectBox
+    return location
+def getBoxes(img, samples):
+    return locateBoxes(findText(img), samples)
+
