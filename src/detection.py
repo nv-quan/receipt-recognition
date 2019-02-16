@@ -19,10 +19,10 @@ def findText(img):
     for cnt in contours:
         x,y,w,h = cv.boundingRect(cnt)
         if h > minwidth:
+            y -= 3
+            h += 6
             info = (x,y,w,h)
             textBoxes.append(info)
-            y -= 2
-            h += 4
             cv.rectangle(img,(x,y),(x+w,y+h),(0,255,0),1)
     if report:
         cv.imwrite('./output/box.png', img)

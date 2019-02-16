@@ -42,9 +42,9 @@ docHeight = input("Please enter document height ")
 docSample = input("Please enter sample image ")
 '''
 register = dict()
-docWidth = 1000
-docHeight = 666
-docSample = './docsample/sam1.png'
+docWidth = 658
+docHeight = 414
+docSample = './docsample/sam3.png'
 image = cv2.imread(docSample)
 docWidth = image.shape[1]
 docHeight = image.shape[0]
