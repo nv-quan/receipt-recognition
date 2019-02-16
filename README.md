@@ -7,6 +7,7 @@ Working on detect regions based on a sample.
 * python3
 * cv2 (OpenCV 3.4.4)
 * numpy
+* Tesseract OCR
 ### Usage
 #### Download
 ```sh
