@@ -1,4 +1,3 @@
-#Fixing bug in line 118. Bug in input 004
 import cv2 as cv
 from scipy import stats
 import numpy as np
